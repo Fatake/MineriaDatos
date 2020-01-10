@@ -1,52 +1,71 @@
 import argparse
+import sys
+# 
+# Main
+#
+def main():
+    args = argumentos()
+    if args.archivo_data == None:
+        sys.exit("No a ingresado ningun archivo\nUtilice [-h] para ayuda")
+    
+    nombreArchivo = ""+args.archivo_data
 
-if __name__ == '__main__':
-    print("Entra Al programa")
-    parser = argparse.ArgumentParser(description='Short sample app')
+    if nombreArchivo.find(".data") == -1 :
+       sys.exit("No ingreso un archivo .data") 
 
-    parser.add_argument('-s', action='store',
-                    dest='Valor simple',
-                    nargs=2,
-                    help='Store a simple value')
+    try:
+        archivoData = open(nombreArchivo,"r")
+    except:
+        sys.exit("No existe el archivo "+nombreArchivo) 
+    
+    nombreArchivoARFF = nombreArchivo.replace(".data", ".arff")
+    archivoARFF = open(nombreArchivoARFF,"w")
 
-    parser.add_argument('-c', action='store_const',
-                    dest='constant_value',
-                    const='value-to-store',
-                    help='Store a constant value')
+    archivoARFF.write("@relation "+nombreArchivo.replace(".data", "")+"\n\n")
 
-    parser.add_argument('-t', action='store_true',
-                    default=False,
-                    dest='boolean_t',
-                    help='Set a switch to true')
+    lineas = archivoData.readlines()
 
-    parser.add_argument('-f', action='store_false',
-                    default=True,
-                    dest='boolean_f',
-                    help='Set a switch to false')
 
-    parser.add_argument('-a', action='append',
-                    dest='collection',
-                    default=[],
-                    help='Add repeated values to a list')
+    i = 0
+    j = -1
+    for linea in lineas:
+        for campo in linea:
+            if j != i and campo.find(",") != -1:
+                archivoARFF.write("@attribute A"+str(i+1)+"\n")
+                i += 1
+        j = i
+    
+    archivoARFF.write("\n@data\n")
 
-    parser.add_argument('-A', action='append_const',
-                    dest='const_collection',
-                    const='value-1-to-append',
-                    default=[],
-                    help='Add different values to list')
+    for linea in lineas:
+        archivoARFF.write(""+linea)
+ 
+    archivoData.close()
+    archivoARFF.close()
 
-    parser.add_argument('-B', action='append_const',
-                    dest='const_collection',
-                    const='value-2-to-append',
-                    help='Add different values to list')
+    print("Archivo "+nombreArchivoARFF+" Convertido\n")
+    
+
+def argumentos():
+    '''
+    Argumentos() recibe de la linea de comandos
+    -h, --help ayuda de los comandos
+    -f, --file nombre de alrchivo o PATH .data
+    --version  version del programa
+    Retorna los argumentos recibidos
+    '''
+    parser = argparse.ArgumentParser(description='Convertidor de .data a .arff')
+
+    parser.add_argument('-f','--file', 
+                    action='store',
+                    default=None,
+                    dest='archivo_data',
+                    help='Recibe un Archivo o un PATH de archivos .data para convertir')
 
     parser.add_argument('--version', action='version',
                     version='%(prog)s 1.0')
+    
+    return parser.parse_args()
 
-    args = parser.parse_args()
-    print('simple_value     = {!r}'.format(args.simple_value))
-    print('constant_value   = {!r}'.format(args.constant_value))
-    print('boolean_t        = {!r}'.format(args.boolean_t))
-    print('boolean_f        = {!r}'.format(args.boolean_f))
-    print('collection       = {!r}'.format(args.collection))
-    print('const_collection = {!r}'.format(args.const_collection))
+if __name__ == '__main__':
+    main()
