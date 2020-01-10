@@ -30,11 +30,11 @@ def main():
     j = -1
     for linea in lineas:
         for campo in linea:
-            if j != i and campo.find(",") != -1:
+            if j != i and campo.find(",") != -1 :
                 archivoARFF.write("@attribute A"+str(i+1)+"\n")
                 i += 1
         j = i
-    
+    archivoARFF.write("@attribute A"+str(i+1)+"\n")
     archivoARFF.write("\n@data\n")
 
     for linea in lineas:
