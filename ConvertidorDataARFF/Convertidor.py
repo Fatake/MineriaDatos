@@ -1,31 +1,36 @@
-import argparse
+import argv
 import sys
 # 
 # Main
 #
 def main():
-    args = argumentos()
-    if args.archivo_data == None:
-        sys.exit("No a ingresado ningun archivo\nUtilice [-h] para ayuda")
-    
-    nombreArchivo = ""+args.archivo_data
+    #Recibe los argumentos de la ninea de comandos
+    nombresArchivos = argv.argumentos()
 
-    if nombreArchivo.find(".data") == -1 :
-       sys.exit("No ingreso un archivo .data") 
+    #Convierte los archivos a strings
+    nombreArchivoData = "" + nombresArchivos[0]
+    nombreArchivoName = "" + nombresArchivos[1]
 
+    #Busca la existencia de archivos .data y .name
+    if nombreArchivoData.find(".data") == -1 or nombreArchivoName.find(".names") == -1:
+       sys.exit("No ingreso un archivo valido")
+
+    #Intenta Abrir los archivos
     try:
-        archivoData = open(nombreArchivo,"r")
+        archivoData = open(nombreArchivoData,"r")
+        archivoName = open(nombreArchivoName,"r")
     except:
-        sys.exit("No existe el archivo "+nombreArchivo) 
-    
-    nombreArchivoARFF = nombreArchivo.replace(".data", ".arff")
-    archivoARFF = open(nombreArchivoARFF,"w")
+        sys.exit("Error al abrir los archivos "+nombreArchivoData+nombreArchivoName) 
 
-    archivoARFF.write("@relation "+nombreArchivo.replace(".data", "")+"\n\n")
+    #Crea un archivo extension .arff con el nombre del archivo .data
+    archivoARFF = open(nombreArchivoData.replace(".data", ".arff"),"w")
+
+    #Crea la cabezera @relacion tabla y escribe en archivo.arff
+    archivoARFF.write("@relation "+nombreArchivoData.replace(".data", "")+"\n\n")
 
     lineas = archivoData.readlines()
 
-
+    #Busca la cantidad de atributos que existen
     i = 0
     j = -1
     for linea in lineas:
@@ -35,37 +40,14 @@ def main():
                 i += 1
         j = i
     archivoARFF.write("@attribute A"+str(i+1)+"\n")
-    archivoARFF.write("\n@data\n")
 
+    #Escribe todos los datos en el archivo
+    archivoARFF.write("\n@data\n")
     for linea in lineas:
         archivoARFF.write(""+linea)
  
     archivoData.close()
     archivoARFF.close()
-
-    print("Archivo "+nombreArchivoARFF+" Convertido\n")
-    
-
-def argumentos():
-    '''
-    Argumentos() recibe de la linea de comandos
-    -h, --help ayuda de los comandos
-    -f, --file nombre de alrchivo o PATH .data
-    --version  version del programa
-    Retorna los argumentos recibidos
-    '''
-    parser = argparse.ArgumentParser(description='Convertidor de .data a .arff')
-
-    parser.add_argument('-f','--file', 
-                    action='store',
-                    default=None,
-                    dest='archivo_data',
-                    help='Recibe un Archivo o un PATH de archivos .data para convertir')
-
-    parser.add_argument('--version', action='version',
-                    version='%(prog)s 1.0')
-    
-    return parser.parse_args()
 
 if __name__ == '__main__':
     main()
