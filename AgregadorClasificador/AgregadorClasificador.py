@@ -30,6 +30,7 @@ def argumentos():
                 Nombreatributo,valorglobal,closter1,closter2,....
             '''))
 
+    # Argumento de paso de Archivos
     parser.add_argument('-f','--files', 
                     action='store',
                     default=None,
@@ -38,6 +39,7 @@ def argumentos():
                     dest='archivo',
                     help='-f <DB.arff> <clusters.dat>')
     
+    # Argumento de distancia
     parser.add_argument('-d','--distancia', 
                     action='store',
                     default="e",
@@ -53,9 +55,6 @@ def argumentos():
                         o = coseno
                         s = Mahalanobis
                     '''))
-
-    parser.add_argument('--version', action='version',
-                    version='%(prog)s 0.8.0')
 
     args = parser.parse_args()
 
