@@ -1,5 +1,6 @@
 import argparse
 import sys
+import textwrap
 #
 # Constantes
 #
@@ -15,32 +16,48 @@ def argumentos():
     --version  version del programa
     Retorna los argumentos recibidos
     '''
-    parser = argparse.ArgumentParser(description='AgreadorClasificador')
+    parser = argparse.ArgumentParser(description='AgreadorClasificador',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=textwrap.dedent('''\
+                Por defauld la distancia tomada sera la de euclides si no se especifica
+                Ejemplo:
+                    python AgregadorClasificador.py -f BD.arff clusters.dat -d m
+
+                Formato de cluster.dat:
+                ===========================================
+                Nombreatributo,valorglobal,closter1,closter2,....
+                Nombreatributo,valorglobal,closter1,closter2,....
+                Nombreatributo,valorglobal,closter1,closter2,....
+            '''))
 
     parser.add_argument('-f','--files', 
                     action='store',
                     default=None,
                     nargs=2,
+                    required=True,
                     dest='archivo',
                     help='-f <DB.arff> <clusters.dat>')
     
     parser.add_argument('-d','--distancia', 
                     action='store',
-                    default=None,
+                    default="e",
                     nargs=1,
+                    required=False,
+                    choices=['e', 'm', 'c','o','s'],
                     dest='funcionDistancia',
-                    help='Nombre de la funcion de distancia')
+                    help=textwrap.dedent('''\
+                        Donde:\n
+                        e = euclidiada
+                        m = Manhattan
+                        c = Chebychev
+                        o = coseno
+                        s = Mahalanobis
+                    '''))
 
     parser.add_argument('--version', action='version',
-                    version='%(prog)s 0.1.0')
+                    version='%(prog)s 0.8.0')
 
     args = parser.parse_args()
-
-    #Reviza si recibio los archivos
-    if args.archivo == None:
-        sys.exit("Faltan ingresar argumentos\nUtilice [-h] para ver ayuda")
-    elif args.funcionDistancia == None:
-        sys.exit("Ingrese una funcion de distancia")
 
     return args.archivo, args.funcionDistancia[0]
 
@@ -119,15 +136,8 @@ def procesaArff( archivoLeido ):
 #
 def procesaClusterDat( archivoLeido ):
     clusters = []
-    '''
-    Procesa los closters y elimina
-    las palabras siguiendo el formato
-    cluster.dat
-    ===========================================
-    Nombreatributo,valorglobal,closter1,closter2,....
-    Nombreatributo,valorglobal,closter1,closter2,....
-    Nombreatributo,valorglobal,closter1,closter2,....
-    '''
+    #Procesa los closters y elimina
+    #las palabras siguiendo el formato
     for lista in archivoLeido:
         aux = []
         aux = lista.split(",")
