@@ -159,33 +159,50 @@ def distanciaEuclidiana(p1,p2):
        return np.linalg.norm(np.array(p1)-np.array(p2))
 
 #
+# Retorna el numero clasificador del minimo
+#
+def minimo(distancias):
+    min = 255
+    minIndex = 1
+    for distancia in distancias:
+        if distancia[1] < min:
+            min = distancia[1]
+            minIndex = distancia[0]
+    return minIndex
+
+#
 # Funcion que calcula distancias
 #
 def caculoDistancias(baseDatos, clusters, tipoDistancia):
     # Para cada vector de datos se compara 
     # la distancia con cada Cluster
     # Se calcula el minimo 
+    atributoClasificadorLista = []
     for vectorv in baseDatos:
         distancias = []
         i = 1
         for vectoru in clusters:
+            # Calculos de distancia
             if tipoDistancia == 'e':
                 #euclidiada
-                distancias = [i, distance.euclidean(vectorv,vectoru)]
+                distancias.append( [i, distance.euclidean(vectorv,vectoru)] )
             elif tipoDistancia == 'm':
                 #Manhattan
-                distancias = [i, distance.cityblock(vectorv,vectoru)]
+                distancias.append( [i, distance.cityblock(vectorv,vectoru)] )
             elif tipoDistancia == 'c':
                 #Chebychev
-                distancias = [i, distance.chebyshev(vectorv,vectoru)]
+                distancias.append( [i, distance.chebyshev(vectorv,vectoru)] )
             elif tipoDistancia == 'o':
                 #coseno
-                distancias = [i, distance.cosine(vectorv,vectoru)]
+                distancias.append( [i, distance.cosine(vectorv,vectoru)] )
             elif tipoDistancia == 's':
                 #Mahalanobis                         # v        u      matriz de covarianza V transpuesta
-                distancias = [i, distance.mahalanobis(vectorv,vectoru,np.cov(vectorv).T)]
-            print(distancias)
+                distancias.append( [i, distance.mahalanobis(vectorv,vectoru,np.cov(vectorv).T)] )
             i += 1
+        
+        #Optiene el minimo y agrega a la lista
+        atributoClasificadorLista.append( minimo(distancias))
+    return atributoClasificadorLista
 
 
 # 
