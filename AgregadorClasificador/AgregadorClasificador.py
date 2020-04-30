@@ -169,9 +169,24 @@ def caculoDistancias(baseDatos, clusters, tipoDistancia):
         distancias = []
         i = 1
         for vectoru in clusters:
-            distancias = [i, distance.euclidean(vectorv,vectoru)]
+            if tipoDistancia == 'e':
+                #euclidiada
+                distancias = [i, distance.euclidean(vectorv,vectoru)]
+            elif tipoDistancia == 'm':
+                #Manhattan
+                distancias = [i, distance.cityblock(vectorv,vectoru)]
+            elif tipoDistancia == 'c':
+                #Chebychev
+                distancias = [i, distance.chebyshev(vectorv,vectoru)]
+            elif tipoDistancia == 'o':
+                #coseno
+                distancias = [i, distance.cosine(vectorv,vectoru)]
+            elif tipoDistancia == 's':
+                #Mahalanobis                         # v        u      matriz de covarianza V transpuesta
+                distancias = [i, distance.mahalanobis(vectorv,vectoru,np.cov(vectorv).T)]
             print(distancias)
             i += 1
+
 
 # 
 # Main
