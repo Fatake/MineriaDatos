@@ -109,6 +109,7 @@ def leeArchivos( listaArchivos ):
 def procesaArff( archivoLeido ):
     cabecera = []
     cuerpoString = []
+    cabecera
     i = 0
     # Mientras no encuentre los datos
     while archivoLeido[i].find("@data") == -1:
@@ -204,6 +205,39 @@ def caculoDistancias(baseDatos, clusters, tipoDistancia):
         atributoClasificadorLista.append( minimo(distancias))
     return atributoClasificadorLista
 
+#
+# Funcion que genera un nuevo archivo
+#
+def generaArchivo(cabecera, cuerpo, acLista):
+    def listaToString(s):
+        f = True 
+        str1 = ""  
+        for ele in s:
+            if f == True:
+                str1 += ele
+                f = False
+            else:
+                str1 += ","+ele   
+        return str1 
+
+    titulo = cabecera[0]
+    titulo = titulo.replace("@relation ","")
+    titulo = titulo.replace("\n","")
+
+    #Crea un nuevo archivo con el nombre
+    file = open(titulo+".arff","w")
+    #Ingresa el nuevo atributo
+    cabecera.insert(cabecera.index("@data\n"),"@attribute AC numeric\n")
+    #Escribe toda la cabecera en el archivo
+    for linea in cabecera:
+        file.write(linea)
+    
+    # Se agrega al final el atributo clasificador
+    for i in range(0,len(cuerpo)):
+        cuerpo[i].append(str(acLista[i]))
+        file.write( listaToString(cuerpo[i])+"\n" )
+
+    file.close() 
 
 # 
 # Main
@@ -230,7 +264,12 @@ def main():
     clusters = procesaClusterDat( archivosLeidos[1])
     print("Existen un total de "+str(len(clusters))+" Clusters")
     
-    caculoDistancias(np.asfarray(cuerpo,float), np.asfarray(clusters,float), funcionDistancia)
+    #Calcula todas las distancias
+    acLista = caculoDistancias(np.asfarray(cuerpo,float), np.asfarray(clusters,float), funcionDistancia)
+
+    #Genera un nuevo Archivo arff con los ac puestos
+    generaArchivo(cabecera,cuerpo,acLista)
+    print("Archivo con AC generado n.n")
 
 if __name__ == '__main__':
     main()
