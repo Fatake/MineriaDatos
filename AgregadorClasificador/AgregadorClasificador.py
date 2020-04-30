@@ -1,6 +1,9 @@
 import argparse
 import sys
 import textwrap
+import math
+import numpy as np
+from scipy.spatial import distance
 #
 # Constantes
 #
@@ -123,6 +126,7 @@ def procesaArff( archivoLeido ):
     cuerpo = []
     for linea in cuerpoString:
         aux = []
+        linea = linea.replace("\n", "")
         aux = linea.split(",")
         cuerpo.append( aux )
     
@@ -139,12 +143,35 @@ def procesaClusterDat( archivoLeido ):
     #las palabras siguiendo el formato
     for lista in archivoLeido:
         aux = []
+        lista = lista.replace("\n", "")
         aux = lista.split(",")
         clusters.append( aux[2:] )
 
-    return clusters
+    aux = np.array(clusters)
+    clusterTranspuesto = aux.T
 
+    return clusterTranspuesto
 
+#
+# Distancia euclidiana con numpy
+#
+def distanciaEuclidiana(p1,p2):
+       return np.linalg.norm(np.array(p1)-np.array(p2))
+
+#
+# Funcion que calcula distancias
+#
+def caculoDistancias(baseDatos, clusters, tipoDistancia):
+    # Para cada vector de datos se compara 
+    # la distancia con cada Cluster
+    # Se calcula el minimo 
+    for vectorv in baseDatos:
+        distancias = []
+        i = 1
+        for vectoru in clusters:
+            distancias = [i, distance.euclidean(vectorv,vectoru)]
+            print(distancias)
+            i += 1
 
 # 
 # Main
@@ -169,9 +196,9 @@ def main():
 
     #Procesa la informacion de cluster.dat
     clusters = procesaClusterDat( archivosLeidos[1])
-    print("Existen un total de "+str(len(clusters[0]))+" Clusters")
+    print("Existen un total de "+str(len(clusters))+" Clusters")
     
-    
+    caculoDistancias(np.asfarray(cuerpo,float), np.asfarray(clusters,float), funcionDistancia)
 
 if __name__ == '__main__':
     main()
