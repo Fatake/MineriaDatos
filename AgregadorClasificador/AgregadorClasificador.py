@@ -4,9 +4,14 @@ import textwrap
 import math
 import numpy as np
 from scipy.spatial import distance
-#
-# Constantes
-#
+
+'''
+Si tienes errores con numpy y scipy, usa
+pip install numpy 
+pip install scipy
+
+en la terminal 
+'''
 
 #
 # Funcion que recibe los argumentos de la linea de comandos
